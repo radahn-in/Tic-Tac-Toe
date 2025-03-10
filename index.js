@@ -1,4 +1,4 @@
-const GameBoard = (function() {
+const GameBoard = (function () {
   let board = ["", "", "", "", "", "", "", "", ""]
 
   const getBoard = () => board;
@@ -19,12 +19,12 @@ const Player = (name, marker) => {
   return { name, marker };
 }
 
-const displayController = (function() {
-  const player1 = Player("Player 1", "X")
-  const player2 = Player("Player 2", "O")
+const GameController = (function () {
+  const player1 = Player("Player X", "X")
+  const player2 = Player("Player O", "O")
   let currentPlayer = player1;
 
-  const swtichTrurn = () => {
+  const swtichTrun = () => {
     currentPlayer = currentPlayer === player1 ? player2 : player1;
   };
 
@@ -32,7 +32,15 @@ const displayController = (function() {
 
   const playRound = (index) => {
     if (GameBoard.placeMarker(index, currentPlayer.marker)) {
-      swtichTrurn();
+      const winner = checkWinner();
+      if (winner) {
+        RenderDisplay.showMessage(
+          winner === "draw" ? "It's a draw!" : `${currentPlayer.name} wins!`
+        );
+        return
+      }
+      swtichTrun();
+      RenderDisplay.updateScreen();
     }
   };
 
@@ -49,12 +57,54 @@ const displayController = (function() {
         return board[a];
       }
     }
-    return board.includes("") ? null : "draw"; //returns 'draw' if board is full
+    return board.includes("") ? null : "draw";
   }
-  return { getCurrentPlayer, playRound, checkWinner };
+  const resetGame = () => {
+    GameBoard.resetBoard();
+    currentPlayer = player1;
+
+    RenderDisplay.updateScreen();
+  }
+
+  return { getCurrentPlayer, playRound, checkWinner, resetGame };
 })();
 
-console.log(GameBoard.getBoard());
-displayController.playRound(0);
-console.log(GameBoard.getBoard());
-console.log(displayController.checkWinner())
+const RenderDisplay = (function () {
+  const game = GameController;
+  const playerTurn = document.querySelector('.turn');
+  const boardDiv = document.querySelector('.board');
+
+  const updateScreen = () => {
+    boardDiv.textContent = "";
+
+    const board = GameBoard.getBoard();
+    const currentPlayer = game.getCurrentPlayer();
+
+    playerTurn.textContent = `${currentPlayer.name}'s turn...`
+    board.forEach((cell, index) => {
+      const cellElement = document.createElement("button");
+      cellElement.classList.add("cell");
+      cellElement.textContent = cell;
+
+      if (cell !== "") {
+        cellElement.classList.add("disabled")
+      }
+      cellElement.addEventListener("click", () => game.playRound(index));
+      boardDiv.appendChild(cellElement)
+    });
+  };
+
+  const showMessage = (message) => {
+    playerTurn.textContent = message;
+    document.querySelectorAll(".cell").forEach((cell) => cell.classList.add('disabled'));
+  }
+
+
+  updateScreen();
+
+  return { updateScreen, showMessage }
+})();
+
+document.querySelector('.reset').addEventListener("click", GameController.resetGame);
+RenderDisplay.updateScreen();
+
