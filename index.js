@@ -20,6 +20,12 @@ const Player = (name, marker) => {
 }
 
 const GameController = (function () {
+  const DEFAULT_P1_NAME = "Player X";
+  const DEFAULT_P2_NAME = "Player O";
+
+  let player1Name = DEFAULT_P1_NAME;
+  let player2Name = DEFAULT_P2_NAME;
+
   let player1 = Player("Player X", "X")
   let player2 = Player("Player O", "O")
   let currentPlayer = player1;
@@ -59,16 +65,30 @@ const GameController = (function () {
     }
     return board.includes("") ? null : "draw";
   }
-  const resetGame = () => {
+  const resetGame = (resetNames = false) => {
     GameBoard.resetBoard();
+    if (resetNames) {
+      player1Name = DEFAULT_P1_NAME;
+      player2Name = DEFAULT_P2_NAME;
+
+      document.getElementById('playerone').value = '';
+      document.getElementById('playertwo').value = '';
+    }
+    player1 = Player(player1Name, "X");
+    player2 = Player(player2Name, "O");
     currentPlayer = player1;
+
     RenderDisplay.updateScreen();
   }
 
   const setPlayersName = (nameone, nametwo) => {
-    player1 = Player(nameone || "Player X", "X")
-    player2 = Player(nametwo || "Player O", "O")
+    player1Name = nameone || DEFAULT_P1_NAME;
+    player2Name = nametwo || DEFAULT_P2_NAME;
+
+    player1 = Player(player1Name, "X");
+    player2 = Player(player2Name, "O");
     currentPlayer = player1;
+
     RenderDisplay.updateScreen();
   }
 
@@ -111,9 +131,6 @@ const RenderDisplay = (function () {
 })();
 
 
-
-document.querySelector('.reset').addEventListener("click", GameController.resetGame);
-
 document.getElementById('name').addEventListener("submit", (event) => {
   event.preventDefault();
   const player1Name = document.getElementById('playerone').value;
@@ -122,6 +139,10 @@ document.getElementById('name').addEventListener("submit", (event) => {
   GameController.setPlayersName(player1Name, player2Name);
 });
 
+document.querySelector('.reset').addEventListener("click", () => {
+  const resetNames = document.getElementById('reset-names').checked;
+  GameController.resetGame(resetNames);
+})
 
 
 RenderDisplay.updateScreen();
