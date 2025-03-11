@@ -20,8 +20,8 @@ const Player = (name, marker) => {
 }
 
 const GameController = (function () {
-  const player1 = Player("Player X", "X")
-  const player2 = Player("Player O", "O")
+  let player1 = Player("Player X", "X")
+  let player2 = Player("Player O", "O")
   let currentPlayer = player1;
 
   const swtichTrun = () => {
@@ -62,11 +62,17 @@ const GameController = (function () {
   const resetGame = () => {
     GameBoard.resetBoard();
     currentPlayer = player1;
-
     RenderDisplay.updateScreen();
   }
 
-  return { getCurrentPlayer, playRound, checkWinner, resetGame };
+  const setPlayersName = (nameone, nametwo) => {
+    player1 = Player(nameone || "Player X", "X")
+    player2 = Player(nametwo || "Player O", "O")
+    currentPlayer = player1;
+    RenderDisplay.updateScreen();
+  }
+
+  return { getCurrentPlayer, playRound, checkWinner, resetGame, setPlayersName };
 })();
 
 const RenderDisplay = (function () {
@@ -99,12 +105,24 @@ const RenderDisplay = (function () {
     document.querySelectorAll(".cell").forEach((cell) => cell.classList.add('disabled'));
   }
 
-
   updateScreen();
 
   return { updateScreen, showMessage }
 })();
 
+
+
 document.querySelector('.reset').addEventListener("click", GameController.resetGame);
+
+document.getElementById('name').addEventListener("submit", (event) => {
+  event.preventDefault();
+  const player1Name = document.getElementById('playerone').value;
+  const player2Name = document.getElementById('playertwo').value;
+  GameBoard.resetBoard();
+  GameController.setPlayersName(player1Name, player2Name);
+});
+
+
+
 RenderDisplay.updateScreen();
 
