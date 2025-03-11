@@ -8,3 +8,44 @@
   grid-template-columns: repeat(3, 200px);
   grid-template-rows: repeat(3, 200px);
 }
+
+.container {
+  background-color: #205781;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.cell {
+  background-color: #4F959D;
+}
+
+
+input {
+  background-color: #F6F8D5;
+}
+
+label {
+  color: #fff;
+}
+
+h1 {
+  color: #fff;
+}
+
+
+.btn {
+  background-color: #98D2C0;
+  width: 75px;
+  height: 35px;
+  color: #205781;
+  border: 1px solid #95D2C0;
+  border-radius: 20px;
+}
+
+form {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
